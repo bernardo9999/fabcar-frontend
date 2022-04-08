@@ -6,7 +6,7 @@ import axios from "axios";
 const initialState = () => {
   return { _id: "", _make: "", _model: "", _colour: "", _owner: "" };
 };
-const url = "http://167.71.249.87:8000/fabcar/";
+const url = "http://localhost:8000/fabcar/";
 const path = {
   getall: "getAll/",
   create: "create/",
