@@ -1,15 +1,14 @@
 import "./App.css";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import InputTable from "./InputTable";
 import axios from "axios";
 import { useLocalDB } from "./context/LocalDB";
+import { Button } from "@material-ui/core";
 
 function App() {
   const { tableItem, setTableITem, setOpen, setMSG } = useLocalDB();
 
-  useEffect(FetchData, []);
-
-  const url = "http://localhost:8000/fabcar/";
+  const url = "http://167.71.249.87:8000/fabcar/";
   const path = {
     getall: "getAll/",
     create: "create/",
@@ -19,48 +18,79 @@ function App() {
     delete: "delete/",
   };
 
-  function FetchData() {
-    fetch(`${url}${path.getall}`)
-      .then((res) => {
-        return axios.get(res.url);
-      })
-      .then((res) => setTableITem([...res.data]))
-      .catch((error) => console.log(error));
-  }
+  // function FetchData() {
+  //   fetch(`${url}${path.getall}`)
+  //     .then((res) => {
+  //       return axios.get(res.url);
+  //     })
+  //     .then((res) => setTableITem([...res.data]))
+  //     .catch((error) => console.log(error));
+  // }
 
-  function Table() {
-    function handleDelete(id, itemindex) {
-      const tablereturn = tableItem.filter((item, index) => {
-        if (index !== itemindex) return true;
-      });
+  const FetchData = useCallback(
+    function FetchData() {
+      axios(`${url}${path.getall}`)
+        .then((res) => setTableITem(JSON.parse(res.data.response)))
+        .catch((error) => console.log(error));
+    },
+    [path.getall, setTableITem]
+  );
+
+  useEffect(FetchData, [FetchData]);
+
+  const [id, setID] = useState("");
+
+  function handleDelete() {
+    if (id) {
       fetch(`${url}${path.delete}${id}`)
         .then((res) => axios.delete(res.url))
         .catch((error) => console.log(error));
-      setTableITem(tablereturn);
+
       FetchData();
       setOpen(true);
       setMSG("Deletado com Sucesso!");
     }
+  }
+
+  function Table() {
     return (
       <table className="ui single line table">
-        <tr>
-          <th>ID</th>
-          <th>MAKE</th>
-          <th>MODEL</th>
-          <th>COLOUR</th>
-          <th>OWNER</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>MAKE</th>
+            <th>MODEL</th>
+            <th>COLOR</th>
+            <th>OWNER</th>
+          </tr>
+        </thead>
         {tableItem
           ? tableItem.map((item, index) => {
               return (
-                <tr key={item._id}>
-                  <td>{item._id}</td>
-                  <td>{item._make}</td>
-                  <td>{item._model}</td>
-                  <td>{item._colour}</td>
-                  <td>{item._owner}</td>
-                  <button onClick={() => handleDelete(item._id, index)}>DEL</button>
-                </tr>
+                <tbody key={item.Key}>
+                  <tr>
+                    <td>{item.Key}</td>
+                    <td>{item.Record.make}</td>
+                    <td>{item.Record.model}</td>
+                    <td>{item.Record.color}</td>
+                    <td>{item.Record.owner}</td>
+                    <td>
+                      <Button
+                        variant="outlined"
+                        color="default"
+                        style={{ borderColor: "red", color: "red" }}
+                        onClick={() => {
+                          setID(item.Key);
+                          console.log("id:", item.Key);
+
+                          handleDelete(id);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
               );
             })
           : null}
