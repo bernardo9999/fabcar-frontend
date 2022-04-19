@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, TextField } from "@material-ui/core";
 import { useLocalDB } from "./context/LocalDB";
 import axios from "axios";
@@ -28,6 +28,10 @@ function InputTable() {
     [setTableITem]
   );
 
+  // useEffect(() => {
+  //   FetchData();
+  // }, [FetchData, tableItem, setTableITem]);
+
   function AddItem(e) {
     e.preventDefault();
     const itemreturn = {
@@ -40,11 +44,12 @@ function InputTable() {
     fetch(`${url}${path.create}`)
       .then((res) => {
         axios.post(res.url, itemreturn);
-        console.log(itemreturn);
       })
       .catch((error) => console.log(error));
     setItem(initialState());
-    FetchData();
+    setTimeout(() => {
+      FetchData();
+    }, 5000);
     setMSG("Adicionado com Sucesso!");
     setOpen(true);
   }

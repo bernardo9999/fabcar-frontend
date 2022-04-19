@@ -36,22 +36,9 @@ function App() {
     [path.getall, setTableITem]
   );
 
-  useEffect(FetchData, [FetchData]);
-
-  const [id, setID] = useState("");
-
-  function handleDelete() {
-    if (id) {
-      fetch(`${url}${path.delete}${id}`)
-        .then((res) => axios.delete(res.url))
-        .catch((error) => console.log(error));
-
-      FetchData();
-      setOpen(true);
-      setMSG("Deletado com Sucesso!");
-    }
-  }
-
+  useEffect(() => {
+    FetchData();
+  }, [FetchData]);
   function Table() {
     return (
       <table className="ui single line table">
@@ -80,10 +67,14 @@ function App() {
                         color="default"
                         style={{ borderColor: "red", color: "red" }}
                         onClick={() => {
-                          setID(item.Key);
-                          console.log("id:", item.Key);
-
-                          handleDelete(id);
+                          fetch(`${url}${path.delete}${item.Key}`)
+                            .then((res) => axios.delete(res.url))
+                            .catch((error) => console.log(error));
+                          setTimeout(() => {
+                            FetchData();
+                          }, 5000);
+                          setOpen(true);
+                          setMSG("Deletado com Sucesso!");
                         }}
                       >
                         Delete
