@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import InputTable from "./InputTable";
 import axios from "axios";
 import { useLocalDB } from "./context/LocalDB";
